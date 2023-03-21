@@ -1,0 +1,83 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+}
+
+android {
+    namespace 'com.example.tazake.network'
+    compileSdk libs.versions.android.compileSdk.get().toInteger()
+
+    defaultConfig {
+        applicationId "com.example.tazake.network"
+        minSdk libs.versions.android.minSdk.get().toInteger()
+        targetSdk libs.versions.android.targetSdk.get().toInteger()
+        versionCode libs.versions.app.versionCode.get().toInteger()
+        versionName libs.versions.app.versionName.get()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    flavorDimensions "mode"
+    productFlavors {
+        stg {
+            dimension "mode"
+            versionNameSuffix '-dev'
+
+            buildConfigField "String", "SERVER_DOMAIN", "\"https://reqres.in/api/\""
+            buildConfigField "okhttp3.logging.HttpLoggingInterceptor.Level", "HTTP_LOG_LEVEL", "okhttp3.logging.HttpLoggingInterceptor.Level.BODY"
+        }
+        prod {
+            dimension "mode"
+
+            buildConfigField "String", "SERVER_DOMAIN", "\"https://reqres.in/api/\""
+            buildConfigField "okhttp3.logging.HttpLoggingInterceptor.Level", "HTTP_LOG_LEVEL", "okhttp3.logging.HttpLoggingInterceptor.Level.NONE"
+        }
+    }
+    variantFilter { variant ->
+
+        def buildType = variant.buildType.name
+        def flavors = variant.flavors*.name
+        switch (buildType) {
+            case "debug":
+                if (flavors.contains("prod")) setIgnore(true)
+                break
+        }
+    }
+}
+
+dependencies {
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.kotlin.coroutines
+    implementation libs.kotlin.serialization
+
+    implementation libs.bundles.retrofit
+
+    testImplementation(libs.bundles.testing.impl)
+    androidTestImplementation(libs.bundles.testing.android.impl)
+}

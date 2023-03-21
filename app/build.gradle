@@ -1,0 +1,74 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.example.tazake.mvvm_network'
+    compileSdk libs.versions.android.compileSdk.get().toInteger()
+
+    defaultConfig {
+        applicationId "com.example.tazake.mvvm_network"
+        minSdk libs.versions.android.minSdk.get().toInteger()
+        targetSdk libs.versions.android.targetSdk.get().toInteger()
+        versionCode libs.versions.app.versionCode.get().toInteger()
+        versionName libs.versions.app.versionName.get()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    flavorDimensions "mode"
+    productFlavors {
+        stg {
+            dimension "mode"
+            versionNameSuffix '-dev'
+        }
+        prod {
+            dimension "mode"
+        }
+    }
+    variantFilter { variant ->
+
+        def buildType = variant.buildType.name
+        def flavors = variant.flavors*.name
+        switch (buildType) {
+            case "debug":
+                if (flavors.contains("prod")) setIgnore(true)
+                break
+        }
+    }
+
+}
+
+dependencies {
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.android.material
+    implementation libs.android.constraintlayout
+    implementation libs.androidx.lifecycle.viewModel
+    implementation libs.androidx.lifecycle.liveData
+
+    testImplementation(libs.bundles.testing.impl)
+    androidTestImplementation(libs.bundles.testing.android.impl)
+    
+    implementation project(':domain')
+}
