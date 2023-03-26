@@ -19,7 +19,7 @@ class MainViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() 
         viewModelScope.launch {
             try {
                 Log.d("DEBUG", "============== fetch")
-                _article.value = getUsersUseCase(1).confirmApiError()
+                _article.value = getUsersUseCase(1)
                 Log.d("DEBUG", "=success=============" + article.value.toString())
             } catch (e: HttpException) {
                 Log.d("DEBUG", "=fail=============" + e.code() + ":" + e.message)
