@@ -22,3 +22,4 @@ rootProject.name = "SampleMVVMNetwork"
 include ':app'
 include ':network'
 include ':domain'
+include ':error'

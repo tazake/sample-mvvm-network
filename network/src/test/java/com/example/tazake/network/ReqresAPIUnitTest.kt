@@ -22,6 +22,7 @@ import java.net.HttpURLConnection
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
+
 class ReqresAPIUnitTest {
 
     private val mockWebServer: MockWebServer = MockWebServer()
@@ -29,11 +30,12 @@ class ReqresAPIUnitTest {
 
     @Before
     fun setup() {
+        mockWebServer.start()
         val contentType = "application/json".toMediaType()
         val format = Json { ignoreUnknownKeys = true }
         targetReqresAPI = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(format.asConverterFactory(contentType))
+            .addConverterFactory(Json.asConverterFactory(contentType))
             .client(ReqresClient().http)
             .build()
             .create(ReqresAPI::class.java)
@@ -66,6 +68,18 @@ class ReqresAPIUnitTest {
         assertEquals(12, target?.total)
         assertEquals(2, target?.totalPages)
         assertEquals(6, target?.data?.size)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun reqresAPI_isFailure() = runTest {
+        val testString = "{\"error\": \"Not Found\"}"
+        val response = MockResponse()
+            .setResponseCode(403)
+            .setBody(testString)
+        mockWebServer.enqueue(response)
+        val target = targetReqresAPI.fetch()
+        assertEquals(403, target.code())
     }
 
 }

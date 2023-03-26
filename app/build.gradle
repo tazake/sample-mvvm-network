@@ -66,9 +66,12 @@ dependencies {
     implementation libs.android.constraintlayout
     implementation libs.androidx.lifecycle.viewModel
     implementation libs.androidx.lifecycle.liveData
+    implementation libs.kotlin.serialization
 
     testImplementation(libs.bundles.testing.impl)
     androidTestImplementation(libs.bundles.testing.android.impl)
-    
+
+    implementation libs.bundles.retrofit
     implementation project(':domain')
+    implementation project(':network')
 }
