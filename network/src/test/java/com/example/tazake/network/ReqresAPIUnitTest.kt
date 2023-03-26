@@ -3,6 +3,7 @@ package com.example.tazake.network
 import com.example.tazake.network.client.ReqresAPI
 import com.example.tazake.network.client.ReqresClient
 import com.example.tazake.network.client.ReqresClientBuilder
+import com.example.tazake.network.dao.Reqres
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -14,6 +15,7 @@ import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import java.net.HttpURLConnection
 
@@ -61,7 +63,7 @@ class ReqresAPIUnitTest {
             .setResponseCode(HttpURLConnection.HTTP_OK)
             .setBody(testString)
         mockWebServer.enqueue(response)
-        val target = targetReqresAPI.fetch().body()
+        val target = targetReqresAPI.fetch().toApiResult<Reqres>().confirmApiError()
 
         assertEquals(1, target?.page)
         assertEquals(6, target?.perPage)
@@ -78,8 +80,11 @@ class ReqresAPIUnitTest {
             .setResponseCode(403)
             .setBody(testString)
         mockWebServer.enqueue(response)
-        val target = targetReqresAPI.fetch()
-        assertEquals(403, target.code())
+        try {
+            targetReqresAPI.fetch().toApiResult<Reqres>().confirmApiError()
+        } catch (e: HttpException) {
+            assertEquals(403, e.code())
+        }
     }
 
 }
