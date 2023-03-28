@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tazake.domain.usecase.GetUsersUseCase
+import com.example.tazake.error.Error
 import com.example.tazake.network.dao.Reqres
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 class MainViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() {
 
@@ -21,10 +21,8 @@ class MainViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() 
                 Log.d("DEBUG", "============== fetch")
                 _article.value = getUsersUseCase(1)
                 Log.d("DEBUG", "=success=============" + article.value.toString())
-            } catch (e: HttpException) {
-                Log.d("DEBUG", "=fail=============" + e.code() + ":" + e.message)
             } catch (t: Throwable) {
-                Log.d("DEBUG", "=fail=============" + t.message)
+                Error.convert(throwable = t).execute()
             }
         }
     }
