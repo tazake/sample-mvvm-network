@@ -24,6 +24,9 @@ retrofit-kotlinx-serialization-converter = "0.8.0"
 junit = "4.13.2"
 mockwebserver = "4.10.0"
 coroutines-test = "1.6.4"
+mockk = "1.10.5"
+androidx-core-testing = "2.2.0"
+
 
 androidx-junit = "1.1.5"
 espresso-core = "3.5.1"
@@ -50,6 +53,8 @@ retrofit-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:
 junit = { module = "junit:junit", version.ref = "junit" }
 mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-core-testing" }
 
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
@@ -57,5 +62,5 @@ espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref =
 
 [bundles]
 retrofit = ["retrofit", "okhttp3", "okhttp3-logging", "retrofit-kotlinx-serialization-converter"]
-testing-impl = ["junit", "mockwebserver", "coroutines-test"]
+testing-impl = ["junit", "mockwebserver", "coroutines-test", "mockk", "androidx-core-testing"]
 testing-android-impl = ["androidx-junit", "espresso-core"]
