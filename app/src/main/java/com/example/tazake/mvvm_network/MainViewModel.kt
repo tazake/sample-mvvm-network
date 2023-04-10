@@ -12,15 +12,14 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() {
 
-    private val _article = MutableLiveData<Reqres?>()
-    private val article: LiveData<Reqres?> = _article
+    private val _reqres = MutableLiveData<Reqres>()
+    val reqres: LiveData<Reqres> = _reqres
 
     fun onClick() {
         viewModelScope.launch {
             try {
                 Log.d("DEBUG", "============== fetch")
-                _article.value = getUsersUseCase(1)
-                Log.d("DEBUG", "=success=============" + article.value.toString())
+                this@MainViewModel._reqres.value = getUsersUseCase(1)
             } catch (t: Throwable) {
                 Error.convert(throwable = t).execute()
             }

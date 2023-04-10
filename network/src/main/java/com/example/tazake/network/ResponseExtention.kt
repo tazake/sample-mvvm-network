@@ -4,24 +4,29 @@ import retrofit2.HttpException
 import retrofit2.Response
 
 fun <T> Response<*>.toApiResult(): ApiResult<T> {
-    return if (this.isSuccessful) {
-        ApiResult.Success(this.body() as T?)
+
+    if (this.isSuccessful) {
+        if (this.body() != null) {
+            @Suppress("UNCHECKED_CAST")
+            return ApiResult.Success(this.body() as T)
+        } else {
+            return ApiResult.Error(HttpException(this))
+        }
     } else {
-        ApiResult.Error(HttpException(this))
+        return ApiResult.Error(HttpException(this))
     }
+
 }
 
 sealed class ApiResult<T> {
-    data class Success<T>(val data: T?) : ApiResult<T>()
+    data class Success<T>(val data: T) : ApiResult<T>()
     data class Error<T>(val httpException: HttpException) :
         ApiResult<T>()
-
-    private val nullResult: T = null as T
 
     fun confirmApiError(): T {
         when (this) {
             is Success -> {
-                return data ?: nullResult
+                return data
             }
             is Error -> {
                 throw httpException
