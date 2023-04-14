@@ -55,6 +55,9 @@ android {
                 break
         }
     }
+    dataBinding {
+        enabled = true
+    }
 
 }
 
@@ -64,6 +67,7 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.android.material
     implementation libs.android.constraintlayout
+    implementation libs.androidx.fragment
     implementation libs.androidx.lifecycle.viewModel
     implementation libs.androidx.lifecycle.liveData
     implementation libs.kotlin.serialization

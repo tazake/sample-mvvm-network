@@ -1,9 +1,9 @@
 package com.example.tazake.network.client
 
 import com.example.tazake.network.BuildConfig
-import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 
 class ReqresClient {

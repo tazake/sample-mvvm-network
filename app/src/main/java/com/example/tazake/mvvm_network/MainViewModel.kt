@@ -19,7 +19,7 @@ class MainViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() 
         viewModelScope.launch {
             try {
                 Log.d("DEBUG", "============== fetch")
-                this@MainViewModel._reqres.value = getUsersUseCase(1)
+                _reqres.value = getUsersUseCase.execute(1)
             } catch (t: Throwable) {
                 Error.convert(throwable = t).execute()
             }

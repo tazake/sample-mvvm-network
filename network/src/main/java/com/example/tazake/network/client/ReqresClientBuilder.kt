@@ -20,6 +20,9 @@ class ReqresClientBuilder(okHttpClient: OkHttpClient) {
         .client(okHttpClient)
         .build()
 
+    fun <T> create(api: Class<T>): T {
+        return retrofit.create(api)
+    }
 }
 
 

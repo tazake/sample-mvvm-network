@@ -1,19 +1,19 @@
 package com.example.tazake.mvvm_network
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.tazake.domain.repository.UsersRepository
 import com.example.tazake.domain.usecase.GetUsersUseCase
+import com.example.tazake.network.ApiResult
 import com.example.tazake.network.dao.Reqres
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import org.junit.*
-import org.junit.rules.TestRule
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
+import java.io.IOException
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -21,17 +21,16 @@ import org.junit.rules.TestRule
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @ExperimentalCoroutinesApi
-class MainViewModelTest {
+class GetUsersUseCaseTest {
 
-    @get:Rule
-    val rule: TestRule = InstantTaskExecutorRule()
+    private val mockRepository = mockk<UsersRepository>()
+    private val getUsersUseCase = GetUsersUseCase(mockRepository)
 
-    private lateinit var result: Reqres
+
+    private lateinit var requres: Reqres
 
     @Before
     fun setup() {
-        Dispatchers.setMain(Dispatchers.Unconfined)
-
         // JSON文字列
         val jsonString = """
         {
@@ -69,29 +68,33 @@ class MainViewModelTest {
         }
     """.trimIndent()
 
-        // JSON文字列をデシリアライズして、Reqresクラスのインスタンスを生成
-        result = Json.decodeFromString(jsonString)
-
+        requres = Json.decodeFromString(jsonString)
     }
 
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
+    @Test
+    fun `GetUsersUseCase should return correct data`() = runTest {
+        val result = ApiResult.Success(requres)
+        coEvery { mockRepository.get(1) } returns result
+
+        val target = getUsersUseCase.execute(1)
+
+        Assert.assertEquals(2, target?.page)
+        Assert.assertEquals(3, target?.perPage)
+        Assert.assertEquals(12, target?.total)
+        Assert.assertEquals(4, target?.totalPages)
+        Assert.assertEquals(3, target?.data?.size)
     }
 
 
     @Test
-    fun addition_isCorrect() = runTest {
+    fun `GetUsersUseCase should return httpException`() = runTest {
+        coEvery { mockRepository.get(1) }.throws(IOException())
 
-        val getUsersUseCase = mockk<GetUsersUseCase>()
-        val target = MainViewModel(getUsersUseCase)
-
-        coEvery { getUsersUseCase.execute(any()) } returns result
-
-        target.onClick()
-        val targetResult = target.reqres.value
-        Assert.assertEquals(2, targetResult!!.page)
-        Assert.assertEquals(12, targetResult!!.total)
-
+        try {
+            getUsersUseCase.execute(1)
+        } catch (e: Exception) {
+            Assert.assertTrue(e is IOException)
+        }
     }
+
 }
